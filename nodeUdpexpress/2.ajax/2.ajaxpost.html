@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form name="regForm">
+    用户名 <input type="text" name="username"><br/>
+    密码 <input type="text" name="password"><br/>
+    <button type="button" onclick="reg()">注册</button>
+</form>
+<div id="preview">
+    用户名 <span id="username"></span><br/>
+    密码 <span id ="password"></span>
+</div>
+</body>
+<script>
+    //序列化表单 urlencoded 查询字符串 key=value&key2=value2
+    function toUrlEncoded(form){
+        var formData =[];//先创建一个数组
+        //1.得到表单中的所有的元素 类似为一个类数组
+        var elements = form.elements;
+        //循环表单中的每个元素
+        for(var i=0;i<elements.length;i++){
+            if(elements[i].type == 'text')//如果input元素的类型是text的话
+                formData.push(elements[i].name+'='+elements[i].value);//把字符串添加到数组中
+        }
+        return formData.join('&');//把数组中的每个元素用&连接
+    }
+
+    //把表单转成JSON字符串
+    function toJson(form){
+        var formData = {};//先创建一个空对象
+        //1.得到表单中的所有的元素 类似为一个类数组
+        var elements = form.elements;
+        //循环表单中的每个元素
+        for(var i=0;i<elements.length;i++){
+            if(elements[i].type == 'text')
+                formData[elements[i].name] = elements[i].value;//把input元素的name作为对象的key,input元素的value作为对象的值
+        }
+        return JSON.stringify(formData);//转成JSON字符串
+    }
+    //编写一个注册方法，当点击按钮的时候执行此方法
+   function reg(){
+       var body = toJson(document.getElementsByName('regForm')[0]);//{"username":"a","password":"b"}
+       var xhr = new XMLHttpRequest();
+
+       xhr.open('POST','/ajax',true);
+       //设置请求头中的内容类型，告诉服务器我的请求体类型是啥
+      // xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+       //告诉服务器端我的请求体是JSON格式的
+       xhr.setRequestHeader('Content-Type','application/json')
+
+       xhr.onreadystatechange = function(){
+            if(xhr.readyState == xhr.DONE && /^2\d{2}$/.test(xhr.status)){
+                console.log(xhr.responseText);//responseText响应体转成的字符串
+                //把响应的字符串转成对象
+                var contentType = xhr.getResponseHeader('Content-Type');//获取响应头中的内容类型
+                var result = {};
+                if(contentType == 'application/json'){
+                    result = JSON.parse(xhr.responseText);
+                }
+                document.querySelector('#username').innerHTML = result.username;
+                document.querySelector('#password').innerHTML = result.password;
+            }
+       }
+       xhr.send(body);//把body字符串作为请求体发送到服务器端
+   }
+</script>
+</html>

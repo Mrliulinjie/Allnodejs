@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<h1>hello</h1>
+<button onclick="load()">点击</button>
+<div id="content"></div>
+<img src="/女神经.jpg" style="width: 100px;height:900px" alt="">
+<div id="top">
+    top
+</div>
+</body>
+<script src="/index.js"></script>
+<script>
+    function load(){
+        //1.创建ajax对象
+        var xhr = new XMLHttpRequest();
+        //打开请求
+        xhr.open('GET','/content',true);
+        //注册当状态发生改变之后回调
+        xhr.onreadystatechange = function(){
+            document.querySelector('#content').innerHTML = xhr.responseText;
+        }
+        //发送请求 如果是否异步为false,同步的时候则send方法会阻塞后续代码的执行，直到响应返回,
+        xhr.send();
+
+    }
+</script>
+</html>
